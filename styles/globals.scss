@@ -1,0 +1,12 @@
+@import "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css";
+
+.text-shadow {
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.glass-bg {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  padding: 15px;
+}
