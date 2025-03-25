@@ -1,50 +1,85 @@
 import React, { useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { useTailwind } from "tailwind-rn";
-import { Ionicons } from "@expo/vector-icons";
+import {
+  MapPin,
+  Settings,
+  Thermometer,
+  Wind,
+  Droplets,
+  Cloud,
+} from "lucide-react-native";
 import { useWeather } from "../hooks/useWeather";
 import WeatherAnimation from "./components/WeatherAnimation";
+import "../styles/weather.scss";
 
-// @ts-ignore
-const HomeScreen = ({ navigation }) => {
-  const tw = useTailwind();
-  const { weather, loading, fetchWeather } = useWeather(37.7749, -122.4194); // Example: Latitude and Longitude for San Francisco
+const HomeScreen = ({ navigation }: { navigation: any }) => {
+  const { weather, loading, fetchWeather, getWeatherDescription } = useWeather(
+    37.7749,
+    -122.4194
+  );
 
   useEffect(() => {
     fetchWeather();
   }, []);
 
   return (
-    <View style={tw("flex-1 bg-skyblue p-4")}>
+    <View className="flex-1 bg-skyblue p-4">
       {/* Top Navigation */}
-      <View style={tw("flex-row justify-between mb-4")}>
+      <View className="flex-row justify-between mb-4">
         <TouchableOpacity onPress={() => navigation.navigate("location")}>
-          <Ionicons name="location-outline" size={28} color="black" />
+          <MapPin size={28} color="black" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate("settings")}>
-          <Ionicons name="settings-outline" size={28} color="black" />
+          <Settings size={28} color="black" />
         </TouchableOpacity>
       </View>
 
       {/* Weather Info */}
       {weather ? (
         <ScrollView>
-          <View style={tw("items-center")}>
-            <Text style={tw("text-5xl font-bold text-white text-shadow")}>{weather.current.temp}°C</Text>
-            <WeatherAnimation condition={weather.current.weather[0].main} />
-            <Text style={tw("text-lg text-white text-shadow")}>{weather.current.weather[0].description}</Text>
+          <View className="items-center">
+            <Text className="text-5xl font-bold text-white text-shadow">
+              {Math.round(weather.current.temperature_2m)}°C
+            </Text>
+            <WeatherAnimation
+              condition={getWeatherDescription(weather.current.weather_code)}
+            />
+            <Text className="text-lg text-white text-shadow">
+              {getWeatherDescription(weather.current.weather_code)}
+            </Text>
           </View>
 
           {/* Additional Weather Stats */}
-          <View style={tw("mt-6 p-4 glass-bg")}>
-            <Text style={tw("text-white text-lg")}>🌡️ Feels Like: {weather.current.feels_like}°C</Text>
-            <Text style={tw("text-white text-lg")}>💨 Wind Speed: {weather.current.wind_speed} km/h</Text>
-            <Text style={tw("text-white text-lg")}>☀️ UV Index: {weather.current.uvi}</Text>
-            <Text style={tw("text-white text-lg")}>🌁 Visibility: {weather.current.visibility}m</Text>
+          <View className="mt-6 p-4 glass-bg">
+            <View className="flex-row items-center mb-2">
+              <Thermometer size={24} color="white" className="mr-2" />
+              <Text className="text-white text-lg">
+                Humidity: {weather.current.relative_humidity_2m}%
+              </Text>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <Wind size={24} color="white" className="mr-2" />
+              <Text className="text-white text-lg">
+                Wind Speed: {weather.current.wind_speed_10m} km/h
+              </Text>
+            </View>
+            <View className="flex-row items-center mb-2">
+              <Droplets size={24} color="white" className="mr-2" />
+              <Text className="text-white text-lg">
+                Precipitation: {weather.current.precipitation} mm
+              </Text>
+            </View>
+            <View className="flex-row items-center">
+              <Cloud size={24} color="white" className="mr-2" />
+              <Text className="text-white text-lg">
+                Max/Min: {Math.round(weather.daily.temperature_2m_max[0])}°C /{" "}
+                {Math.round(weather.daily.temperature_2m_min[0])}°C
+              </Text>
+            </View>
           </View>
         </ScrollView>
       ) : (
-        <Text style={tw("text-center text-lg text-white")}>Loading...</Text>
+        <Text className="text-center text-lg text-white">Loading...</Text>
       )}
     </View>
   );
